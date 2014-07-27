@@ -156,9 +156,8 @@ void SVDPP::loadData()
 	}
 
 	printf("uNUM %d,iNUM %d\n", userNum, itemNum);
-	m_oriRating.init(userNum,itemNum);
+	m_oriRating.init(userNum+1,itemNum+1);
 
-	m_oriRating = new int[(userNum+1)*(itemNum + 1)];
 
 	//	User and Item Bias
 	userCount = new int[userNum + 1];
@@ -178,18 +177,13 @@ void SVDPP::loadData()
 		itemCount[i] = 0;
 		itemBias[i] = 0.0f;
 	}
-	for (int i = 0; i <(userNum+1)*(itemNum + 1) ; i++)
-	{
-		m_oriRating[i] = 0;
-	}
 
 	fseek(targetTrain, 0L, SEEK_SET);	//	Save Data to Array
 	int ratingCount=0;
 	while (!feof(targetTrain))
 	{
 		fscanf(targetTrain, "%d\t%d\t%d\t%s\n", &userID, &itemID, &oriRating, timestamp);
-		m_oriRating[(itemNum+1)*userID + itemID]=oriRating;
-		
+		m_oriRating.set(userID, itemID, oriRating);
 		userCount[userID]++;
 		userBias[userID] += oriRating;
 		itemCount[itemID]++;
@@ -200,8 +194,10 @@ void SVDPP::loadData()
 
 	int tpIndex = 802;
 	vector<float> rowTest,colTest;
-	getRowVector(tpIndex, &rowTest);
-	getColVector(tpIndex, &colTest);
+
+	m_oriRating.getRowVector(tpIndex, &rowTest);
+	m_oriRating.getColVector(tpIndex, &colTest);
+
 	vector<float>::iterator it;
 
 	float tpsum = 0.0f, tpcount = 0;
@@ -259,7 +255,7 @@ void SVDPP::loadData()
 		{
 			for (int j = 1; j < itemNum; j++)
 			{
-				printf("%d %d %d\n", i, j, m_oriRating[itemNum*i + j]);
+				printf("%d %d %d\n", i, j, m_oriRating.get(i,j));
 			}
 		}
 	}
@@ -325,15 +321,15 @@ int main()
 {
 	SVDPP svp;
 	svp.loadData();
-	Matrix mat(3,4);
-	for (int i = 0; i < 3; i++)
+	Matrix mat;
+	mat.init(6, 2);
+	for (int i = 0; i < 6; i++)
 	{
-		for (int j = 0; j < 4; j++)
+		for (int j = 0; j < 2; j++)
 		{
-			mat.set(i, j, i*j);
+			mat.set(i, j, 1);
 		}
 	}
-	printf("%f\n",mat.get(2, 3));
 	mat.print();
 	return 0;
 }
