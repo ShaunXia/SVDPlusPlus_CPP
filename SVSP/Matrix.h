@@ -18,6 +18,8 @@ public:
 	void print();
 	int getColVector(int, vector<float>*);
 	int getRowVector(int, vector<float>*);
+	void setRowVector(int, const vector<float>&);
+
 private:
 	float *matrix;
 	int col;

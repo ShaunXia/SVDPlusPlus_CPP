@@ -29,7 +29,7 @@ void Matrix::init(int r,int c)
 	{
 		for (int j = 0; j < col; j++)
 		{
-			matrix[i*col + j]=0;
+			matrix[i*col + j]=0.0001f;
 		}
 	}
 }
@@ -51,4 +51,12 @@ int Matrix::getRowVector(int row, vector<float> *output)
 		output->push_back(get(row, i));
 	}
 	return 1;
+}
+
+void Matrix::setRowVector(int row,const vector<float> &input)
+{
+	for (int i = 0; i < input.size(); i++)
+	{
+		set(row, i, input[i]);
+	}
 }
